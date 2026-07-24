@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talita Marquez VIP - Acesso Privado</title>
+  <style>
+    :root {
+      --bg-color: #0d0d0f;
+      --card-bg: #16161a;
+      --text-main: #ffffff;
+      --text-muted: #8899a6;
+      --primary-color: #e0245e;
+      --accent-pink: #d6007e;
+      --accent-glow: rgba(214, 0, 126, 0.15);
+      --input-bg: #202025;
+      --border-color: #2f3336;
+      --green-status: #00ba7c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* Post Container */
+    .post-container {
+      width: 100%;
+      max-width: 500px;
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    /* Post Header */
+    .post-header {
+      display: flex;
+      padding: 16px;
+      gap: 12px;
+      align-items: center;
+      position: relative;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-pink);
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .user-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .display-name {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-main);
+    }
+
+    .username-time {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .more-options {
+      position: absolute;
+      right: 16px;
+      top: 24px;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    /* Post Content */
+    .post-content {
+      padding: 0 16px 16px 16px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    /* Paywall Media Box */
+    .media-box {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background-color: #000;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .media-blurred {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(8px);
+      transition: filter 0.8s ease;
+    }
+
+    .media-unblurred {
+      filter: blur(0) !important;
+    }
+
+    .lock-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      padding: 24px;
+      text-align: center;
+      backdrop-filter: blur(4px);
+      transition: opacity 0.5s ease;
+    }
+
+    .lock-icon {
+      font-size: 48px;
+      animation: pulse 2s infinite;
+    }
+
+    .lock-title {
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+      background: linear-gradient(45deg, #ff007f, #ffaa00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lock-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 280px;
+      line-height: 1.4;
+    }
+
+    /* CTA Button Zone */
+    .cta-zone {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .unlock-btn {
+      width: 100%;
+      padding: 16px;
+      background: transparent;
+      border: 1px solid var(--accent-pink);
+      border-radius: 99px;
+      color: var(--accent-pink);
+      font-weight: 700;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 0 transparent;
+      text-align: center;
+    }
+
+    .unlock-btn:hover {
+      background: var(--accent-pink);
+      color: var(--text-main);
+      box-shadow: 0 0 15px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .unlock-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* Modal / Form Overlay */
+    .overlay-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 440px;
+      background-color: var(--card-bg);
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-group input:focus {
+      border-color: var(--accent-pink);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent-pink), #ff0055);
+      border: none;
+      border-radius: 8px;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 4px 15px rgba(214, 0, 126, 0.4);
+    }
+
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
+
+    .error-msg {
+      color: var(--primary-color);
+      font-size: 13px;
+      margin-top: 10px;
+      display: none;
+      text-align: center;
+    }
+
+    /* Pix Modal Area */
+    .pix-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .pix-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--green-status);
+    }
+
+    .pix-qr-wrapper {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 4px 20px rgba(255,255,255,0.05);
+    }
+
+    .pix-qr-code {
+      display: block;
+      width: 180px;
+      height: 180px;
+    }
+
+    .pix-copia-cola-box {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pix-code-textarea {
+      width: 100%;
+      height: 60px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-muted);
+      padding: 8px;
+      font-size: 11px;
+      resize: none;
+      outline: none;
+      font-family: monospace;
+    }
+
+    .copy-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: var(--border-color);
+    }
+
+    .pix-timer {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .pix-status-polling {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-color);
+      border-top-color: var(--accent-pink);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Success Page content */
+    .success-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      padding: 20px;
+      animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .success-icon {
+      font-size: 64px;
+      color: var(--green-status);
+    }
+
+    .success-title {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .success-subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.4;
+      max-width: 300px;
+    }
+
+    /* Keyframes */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.9; }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      body {
+        padding: 8px;
+      }
+      .post-container {
+        border-radius: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Post Main UI -->
+  <div class="post-container">
+    
+    <!-- Header -->
+    <div class="post-header">
+      <img src="images/talita.jpg" alt="Avatar" class="avatar">
+      <div class="user-info">
+        <div class="user-name-row">
+          <span class="display-name">Talita Marquez</span>
+          <span class="username-time">@talita.marquezz • há 1m</span>
+        </div>
+      </div>
+      <button class="more-options" aria-label="Mais opções">•••</button>
+    </div>
+
+    <!-- Text Content -->
+    <div class="post-content">
+      Todos os meus videos estão aqui 🔞🔥
+    </div>
+
+    <!-- Media with Paywall Blur -->
+    <div class="media-box" id="mediaBox">
+      <img src="images/preview_grid.jpg" alt="Locked media grid" class="media-blurred" id="mediaImg">
+      <div class="lock-overlay" id="lockOverlay">
+        <span class="lock-icon">🔒</span>
+        <span class="lock-title">CONTEÚDO BLOQUEADO</span>
+        <span class="lock-subtitle">Desbloqueie agora para ver todos os vídeos e fotos premium na galeria oficial.</span>
+      </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="cta-zone" id="ctaZone">
+      <button class="unlock-btn" id="unlockBtn">
+        DESBLOQUEAR POSTAGEM POR R$27,90
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Form/Checkout Modal -->
+  <div class="overlay-modal" id="checkoutModal">
+    <div class="modal-content">
+      
+      <!-- Checkout Form -->
+      <div id="checkoutFormWrapper">
+        <div class="modal-header">
+          <h2 class="modal-title">Dados de Desbloqueio</h2>
+          <button class="close-btn" id="closeCheckoutBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="billingForm">
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
+            </div>
+            <div class="form-group">
+              <label for="phone">Telefone</label>
+              <input type="tel" id="phone" placeholder="(11) 99999-9999" required maxlength="15">
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submitFormBtn">Gerar PIX</button>
+            <div class="error-msg" id="formError">Preencha todos os dados corretamente.</div>
+          </form>
+        </div>
+      </div>
+
+      <!-- PIX Area (Hidden until generated) -->
+      <div id="pixWrapper" class="modal-body pix-container">
+        <h3 class="pix-title">Aguardando Pagamento...</h3>
+        <p class="lock-subtitle">Escaneie o QR Code ou copie o código abaixo para pagar R$ 27,90.</p>
+        
+        <div class="pix-qr-wrapper">
+          <img class="pix-qr-code" id="pixQrImg" alt="Pix QR Code">
+        </div>
+
+        <div class="pix-copia-cola-box">
+          <textarea class="pix-code-textarea" id="pixCopiaColaText" readonly></textarea>
+          <button class="copy-btn" id="copyPixBtn">Copiar Código PIX</button>
+        </div>
+
+        <div class="pix-timer">
+          Expira em: <strong id="pixCountdown">59:59</strong>
+        </div>
+
+        <div class="pix-status-polling">
+          <div class="spinner"></div>
+          <span>Verificando pagamento automaticamente...</span>
+        </div>
+      </div>
+
+      <!-- Success Screen (Hidden until paid) -->
+      <div id="successWrapper" class="modal-body success-container">
+        <span class="success-icon">✓</span>
+        <h3 class="success-title">Pagamento Aprovado!</h3>
+        <p class="success-subtitle">O acesso à área VIP de Talita Marquez foi desbloqueado com sucesso.</p>
+        <button class="submit-btn" id="accessContentBtn" style="background: var(--green-status); box-shadow: 0 4px 15px rgba(0, 186, 124, 0.4);">Acessar Área VIP</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/qrcode.min.js"></script>
+  <script>
+    const unlockBtn = document.getElementById('unlockBtn');
+    const checkoutModal = document.getElementById('checkoutModal');
+    const closeCheckoutBtn = document.getElementById('closeCheckoutBtn');
+    const billingForm = document.getElementById('billingForm');
+    const submitFormBtn = document.getElementById('submitFormBtn');
+    const formError = document.getElementById('formError');
+    
+    const checkoutFormWrapper = document.getElementById('checkoutFormWrapper');
+    const pixWrapper = document.getElementById('pixWrapper');
+    const successWrapper = document.getElementById('successWrapper');
+    
+    const pixQrImg = document.getElementById('pixQrImg');
+    const pixCopiaColaText = document.getElementById('pixCopiaColaText');
+    const copyPixBtn = document.getElementById('copyPixBtn');
+    const pixCountdown = document.getElementById('pixCountdown');
+    const accessContentBtn = document.getElementById('accessContentBtn');
+
+    let pollInterval = null;
+    let countdownInterval = null;
+
+    // Open/Close Modal
+    unlockBtn.addEventListener('click', () => {
+      checkoutModal.style.display = 'flex';
+      setTimeout(() => checkoutModal.style.opacity = '1', 10);
+      checkoutModal.querySelector('.modal-content').style.transform = 'scale(1)';
+    });
+
+    const closeModal = () => {
+      checkoutModal.style.opacity = '0';
+      checkoutModal.querySelector('.modal-content').style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        checkoutModal.style.display = 'none';
+        checkoutFormWrapper.style.display = 'block';
+        pixWrapper.style.display = 'none';
+        successWrapper.style.display = 'none';
+        stopPixPolling();
+        stopCountdown();
+      }, 300);
+    };
+
+    closeCheckoutBtn.addEventListener('click', closeModal);
+
+    // Form inputs masking
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, "");
+      if (value.length > 11) value = value.slice(0, 11);
+      
+      if (value.length > 6) {
+        value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
+      } else if (value.length > 2) {
+        value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+      } else if (value.length > 0) {
+        value = `(${value}`;
+      }
+      e.target.value = value;
+    });
+
+    function renderQrCodeLocal(rawCode) {
+      try {
+        const qr = qrcode(0, 'M');
+        qr.addData(rawCode);
+        qr.make();
+        pixQrImg.src = qr.createDataURL(6, 8);
+      } catch (err) {
+        console.error("Erro ao gerar QR Code localmente:", err);
+      }
+    }
+
+    // Submit Form
+    billingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const phone = phoneInput.value.replace(/\D/g, "");
+
+      if (email.length < 5 || phone.length < 10) {
+        showError("Por favor, preencha todos os campos corretamente.");
+        return;
+      }
+
+      submitFormBtn.disabled = true;
+      submitFormBtn.textContent = "Processando...";
+      formError.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/criar-pix', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            amount: 2790, // R$ 27,90
+            customer: { email, phone }
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || "Ocorreu um erro no gateway de pagamento.");
+        }
+
+        // Cache customer details in sessionStorage for upsell page
+        sessionStorage.setItem('customer_data', JSON.stringify({ email, phone }));
+
+        displayPixPayment(data);
+
+      } catch (err) {
+        showError(err.message || "Não foi possível gerar a cobrança. Tente novamente.");
+        submitFormBtn.disabled = false;
+        submitFormBtn.textContent = "Gerar PIX";
+      }
+    });
+
+    function showError(msg) {
+      formError.textContent = msg;
+      formError.style.display = 'block';
+    }
+
+    function displayPixPayment(data) {
+      // Sempre gera o QR Code localmente para evitar erro 401 Unauthorized do qrCodeUrl da API
+      renderQrCodeLocal(data.qrCode);
+      
+      pixCopiaColaText.value = data.qrCode;
+      
+      checkoutFormWrapper.style.display = 'none';
+      pixWrapper.style.display = 'flex';
+      
+      startPixPolling(data.id);
+      
+      const expiresAt = data.expiresAt ? new Date(data.expiresAt) : new Date(Date.now() + 900 * 1000);
+      startCountdown(expiresAt);
+    }
+
+    function startPixPolling(id) {
+      stopPixPolling();
+      pollInterval = setInterval(async () => {
+        try {
+          const response = await fetch(`/api/status-pix?id=${id}`);
+          if (!response.ok) return;
+          
+          const data = await response.json();
+          if (data && data.paid) {
+            handlePaymentSuccess();
+          }
+        } catch (err) {
+          console.warn("Erro ao verificar pagamento PIX:", err);
+        }
+      }, 4000);
+    }
+
+    function stopPixPolling() {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+    }
+
+    function handlePaymentSuccess() {
+      stopPixPolling();
+      stopCountdown();
+      
+      pixWrapper.style.display = 'none';
+      successWrapper.style.display = 'flex';
+    }
+
+    // Access Content (Redirects to Upsell Page after payment approval)
+    accessContentBtn.addEventListener('click', () => {
+      closeModal();
+      window.location.href = "/upsell";
+    });
+
+    // Copy PIX Code
+    copyPixBtn.addEventListener('click', () => {
+      pixCopiaColaText.select();
+      pixCopiaColaText.setSelectionRange(0, 99999);
+      
+      try {
+        navigator.clipboard.writeText(pixCopiaColaText.value);
+        copyPixBtn.textContent = "Código Copiado! ✓";
+        copyPixBtn.style.color = "var(--green-status)";
+        copyPixBtn.style.borderColor = "var(--green-status)";
+      } catch (err) {
+        document.execCommand('copy');
+        copyPixBtn.textContent = "Código Copiado! ✓";
+      }
+
+      setTimeout(() => {
+        copyPixBtn.textContent = "Copiar Código PIX";
+        copyPixBtn.style.color = "var(--text-main)";
+        copyPixBtn.style.borderColor = "var(--border-color)";
+      }, 2000);
+    });
+
+    function startCountdown(endTime) {
+      stopCountdown();
+      
+      function updateTimer() {
+        const now = new Date();
+        const diff = endTime - now;
+        
+        if (diff <= 0) {
+          stopCountdown();
+          pixCountdown.textContent = "Expirado";
+          pixCountdown.style.color = "var(--primary-color)";
+          stopPixPolling();
+          return;
+        }
+        
+        const minutes = Math.floor(diff / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        
+        const pad = (num) => String(num).padStart(2, '0');
+        pixCountdown.textContent = `${pad(minutes)}:${pad(seconds)}`;
+      }
+      
+      updateTimer();
+      countdownInterval = setInterval(updateTimer, 1000);
+    }
+
+    function stopCountdown() {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+    }
+  </script>
+</body>
+</html>
