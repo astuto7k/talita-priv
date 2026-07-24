@@ -447,7 +447,7 @@
       <!-- Checkout Step 1: Offer -->
       <div class="modal-body" id="upsellOfferBody">
         <p class="lock-subtitle">Desbloqueie o álbum completo sem tarjas da Talita Marquez (+120 fotos e vídeos íntimos).</p>
-        <div class="upgrade-price">Apenas R$ 19,90</div>
+        <div class="upgrade-price">Apenas R$ 9,90</div>
         <button class="submit-btn" id="generatePixBtn">Liberar com PIX</button>
       </div>
 
@@ -686,7 +686,7 @@
       // Retrieve cached billing details
       let customer = {
         name: "Maria Souza",
-        email: "mariasouza@gmail.com",
+        email: "cliente@email.com",
         document: "12345678909",
         phone: "11999999999"
       };
@@ -707,7 +707,7 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            amount: 1990, // R$ 19,90 para o upgrade
+            amount: 990, // R$ 9,90 para o upgrade
             customer: customer
           })
         });

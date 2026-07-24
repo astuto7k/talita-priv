@@ -503,7 +503,7 @@
     <!-- Call to Action -->
     <div class="cta-zone" id="ctaZone">
       <button class="unlock-btn" id="unlockBtn">
-        DESBLOQUEAR POSTAGEM POR R$27,90
+        DESBLOQUEAR POSTAGEM POR R$14,90
       </button>
     </div>
 
@@ -521,10 +521,7 @@
         </div>
         <div class="modal-body">
           <form id="billingForm">
-            <div class="form-group">
-              <label for="email">E-mail</label>
-              <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
-            </div>
+
             <div class="form-group">
               <label for="phone">Telefone</label>
               <input type="tel" id="phone" placeholder="(11) 99999-9999" required maxlength="15">
@@ -539,7 +536,7 @@
       <!-- PIX Area (Hidden until generated) -->
       <div id="pixWrapper" class="modal-body pix-container">
         <h3 class="pix-title">Aguardando Pagamento...</h3>
-        <p class="lock-subtitle">Escaneie o QR Code ou copie o código abaixo para pagar R$ 27,90.</p>
+        <p class="lock-subtitle">Escaneie o QR Code ou copie o código abaixo para pagar R$ 14,90.</p>
         
         <div class="pix-qr-wrapper">
           <img class="pix-qr-code" id="pixQrImg" alt="Pix QR Code">
@@ -646,11 +643,10 @@
     billingForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const email = document.getElementById('email').value.trim();
       const phone = phoneInput.value.replace(/\D/g, "");
 
-      if (email.length < 5 || phone.length < 10) {
-        showError("Por favor, preencha todos os campos corretamente.");
+      if (phone.length < 10) {
+        showError("Por favor, preencha o telefone corretamente.");
         return;
       }
 
@@ -665,8 +661,8 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            amount: 2790, // R$ 27,90
-            customer: { email, phone }
+            amount: 1490, // R$ 14,90
+            customer: { phone }
           })
         });
 
@@ -677,7 +673,7 @@
         }
 
         // Cache customer details in sessionStorage for upsell page
-        sessionStorage.setItem('customer_data', JSON.stringify({ email, phone }));
+        sessionStorage.setItem('customer_data', JSON.stringify({ phone }));
 
         displayPixPayment(data);
 

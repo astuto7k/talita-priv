@@ -22,15 +22,15 @@ function generateCPF() {
 
 function validateCustomer(customer = {}) {
   const name = String(customer.name || "Cliente VIP").trim();
-  const email = String(customer.email ?? "").trim();
   const document = digits(customer.document || generateCPF());
   const phone = digits(customer.phone ?? "");
   
-  if (!validEmail(email) || phone.length < 10) {
-    const error = new Error("Dados inválidos. Digite seu e-mail e telefone corretamente.");
+  if (phone.length < 10) {
+    const error = new Error("Dados inválidos. Digite seu telefone corretamente.");
     error.status = 400;
     throw error;
   }
+  const email = customer.email || `cliente${phone}@pix.com`;
   return { name, email, document, phone };
 }
 
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
 
   try {
     const payload = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-    const amount = payload.amount || 2790;
+    const amount = payload.amount || 1490;
     const customer = payload.customer || {};
     const idempotencyKey = req.headers["idempotency-key"] || randomUUID();
 
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
     
     const body = {
       amount: amount,
-      description: amount === 2790 ? "PRODUTO 27" : "PRODUTO 19",
+      description: amount === 1490 ? "PRODUTO 14" : "PRODUTO 9",
       customer: { 
         name: normalized.name, 
         email: normalized.email, 
@@ -73,7 +73,7 @@ export default async function handler(req, res) {
       },
       expires_in: 900,
       metadata: { 
-        product: amount === 2790 ? "PRODUTO 27" : "PRODUTO 19", 
+        product: amount === 1490 ? "PRODUTO 14" : "PRODUTO 9", 
         version: "1", 
         external_reference: idempotencyKey, 
         checkout_url: appUrl 
