@@ -557,12 +557,12 @@
         </div>
       </div>
 
-      <!-- Success Screen (Hidden until paid) -->
+      <!-- Falha Screen (Hidden until paid) -->
       <div id="successWrapper" class="modal-body success-container">
-        <span class="success-icon">✓</span>
-        <h3 class="success-title">Pagamento Aprovado!</h3>
-        <p class="success-subtitle">O acesso à área VIP de Talita Marquez foi desbloqueado com sucesso.</p>
-        <button class="submit-btn" id="accessContentBtn" style="background: var(--green-status); box-shadow: 0 4px 15px rgba(0, 186, 124, 0.4);">Acessar Área VIP</button>
+        <span class="success-icon" style="background: rgba(255,59,48,0.15); color: #ff3b30;">✕</span>
+        <h3 class="success-title" style="color: #ff3b30;">Falha no Pagamento</h3>
+        <p class="success-subtitle">Não foi possível confirmar o seu pagamento. Tente novamente gerando um novo código PIX.</p>
+        <button class="submit-btn" id="accessContentBtn" style="background: linear-gradient(135deg, #ff3b30, #ff6b6b); box-shadow: 0 4px 15px rgba(255,59,48,0.4);">Gerar Novo PIX</button>
       </div>
 
     </div>
@@ -736,10 +736,12 @@
       successWrapper.style.display = 'flex';
     }
 
-    // Access Content (Redirects to Upsell Page after payment approval)
-    accessContentBtn.addEventListener('click', () => {
-      closeModal();
-      window.location.href = "/upsell";
+    // Gerar novo PIX ao clicar no botão de falha
+    accessContentBtn.addEventListener('click', async () => {
+      successWrapper.style.display = 'none';
+      checkoutFormWrapper.style.display = 'block';
+      submitFormBtn.disabled = false;
+      submitFormBtn.textContent = 'Gerar PIX';
     });
 
     // Copy PIX Code
