@@ -3,487 +3,309 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grupo de Trocas Privado - Talita Marquez</title>
+  <title>Falha no Pagamento</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
     :root {
       --bg-color: #0b0b0d;
       --card-bg: #121216;
-      --text-main: #ffffff;
-      --text-muted: #8e8e93;
-      --accent-pink: #ff2d6d;
-      --accent-glow: rgba(255, 45, 109, 0.2);
-      --border-color: #222228;
-      --msg-bg: #1c1c24;
-      --green-status: #34d27a;
+      --text-primary: #f0f0f5;
+      --text-secondary: #8e8e9a;
+      --red: #ff3b30;
+      --red-glow: rgba(255, 59, 48, 0.3);
+      --green: #00ba7c;
+      --green-glow: rgba(0, 186, 124, 0.3);
+      --border: rgba(255,255,255,0.06);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-primary);
       min-height: 100vh;
-      min-height: 100dvh;
-      padding: 12px;
-      overflow-x: hidden;
-    }
-
-    /* Smoke Background Effects */
-    .glow-effect {
-      position: fixed;
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(255, 45, 109, 0.15) 0%, transparent 70%);
-      filter: blur(50px);
-      pointer-events: none;
-      z-index: -1;
-      top: 20%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    /* Notification Popup */
-    #popup-notificacao {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 1000;
-      display: flex;
-      align-items: flex-end;
-      pointer-events: none;
-    }
-
-    .popup-box {
-      background: rgba(18, 18, 22, 0.95);
-      border: 1px solid var(--accent-pink);
-      padding: 12px 18px;
-      border-radius: 12px;
-      min-width: 250px;
-      max-width: 300px;
-      box-shadow: 0 4px 20px rgba(255, 45, 109, 0.3);
-      transform: translateY(30px);
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      font-size: 13px;
-      backdrop-filter: blur(10px);
-    }
-
-    .popup-box strong {
-      color: var(--accent-pink);
-    }
-
-    .popup-show .popup-box {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    /* Main Container */
-    .chat-container {
-      width: 100%;
-      max-width: 440px;
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-      margin-top: 10px;
-      height: 600px;
-    }
-
-    /* Chat Header */
-    .chat-header {
-      background-color: rgba(255, 45, 109, 0.1);
-      border-bottom: 1px solid var(--border-color);
-      padding: 16px;
       display: flex;
       align-items: center;
-      gap: 12px;
-    }
-
-    .model-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent-pink);
-    }
-
-    .header-info {
-      flex: 1;
-    }
-
-    .header-title {
-      font-weight: 800;
-      font-size: 15px;
-      letter-spacing: 0.3px;
-    }
-
-    .header-status {
-      font-size: 12px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 2px;
-    }
-
-    .online-indicator {
-      width: 8px;
-      height: 8px;
-      background-color: var(--green-status);
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 8px var(--green-status);
-    }
-
-    /* Message List Box */
-    .message-box {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      background-color: rgba(0,0,0,0.2);
-    }
-
-    /* Message Item styling */
-    .ct-msg {
-      background-color: var(--msg-bg);
-      border-left: 3px solid var(--accent-pink);
-      padding: 10px 12px;
-      border-radius: 8px;
-      max-width: 90%;
-      align-self: flex-start;
-      opacity: 0;
-      transform: translateY(15px);
-      transition: all 0.4s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .msg-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .ct-nome {
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .ct-text {
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    .ct-event {
-      align-self: center;
-      font-size: 11px;
-      color: var(--text-muted);
-      background-color: rgba(255,255,255,0.03);
-      padding: 4px 10px;
-      border-radius: 99px;
-      border: 1px solid rgba(255,255,255,0.05);
-      animation: fadeIn 0.4s ease;
-    }
-
-    .ct-typing {
-      font-size: 12px;
-      color: var(--accent-pink);
-      font-style: italic;
-      padding-left: 16px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      height: 20px;
-    }
-
-    /* Clickable Blurred Image */
-    .ct-foto {
-      width: 100%;
-      max-height: 200px;
-      object-fit: cover;
-      border-radius: 8px;
-      filter: blur(20px) brightness(0.6);
-      transition: all 0.3s ease;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.1);
-      margin-top: 4px;
-    }
-
-    .ct-foto:hover {
-      filter: blur(14px) brightness(0.8);
-      transform: scale(1.01);
-    }
-
-    /* Payout Checkout / Overlay Modal */
-    .overlay-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.9);
-      backdrop-filter: blur(12px);
-      z-index: 1000;
-      display: none;
       justify-content: center;
-      align-items: center;
-      padding: 16px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      padding: 20px;
     }
 
-    .modal-content {
+    .container {
+      max-width: 420px;
       width: 100%;
-      max-width: 400px;
-      background-color: var(--card-bg);
-      border-radius: 20px;
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-      transform: scale(0.95);
-      transition: transform 0.3s ease;
       text-align: center;
     }
 
-    .modal-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--border-color);
+    .error-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 28px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .error-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255, 59, 48, 0.12);
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 36px;
+      color: var(--red);
+      animation: pulse 2s ease-in-out infinite;
     }
 
-    .modal-title {
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 var(--red-glow); }
+      50% { box-shadow: 0 0 0 12px transparent; }
+    }
+
+    .error-title {
+      font-size: 22px;
       font-weight: 800;
-      font-size: 18px;
-      color: var(--text-main);
+      color: var(--red);
+      margin-bottom: 12px;
     }
 
-    .close-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 24px;
-      cursor: pointer;
-      line-height: 1;
+    .error-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 8px;
     }
 
-    .modal-body {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .upgrade-price {
-      background: linear-gradient(135deg, rgba(255, 45, 109, 0.2), rgba(255, 210, 63, 0.1));
-      border: 1px solid var(--accent-pink);
-      padding: 14px 20px;
+    .refund-notice {
+      background: rgba(255, 59, 48, 0.06);
+      border: 1px solid rgba(255, 59, 48, 0.15);
       border-radius: 12px;
-      font-weight: 800;
-      font-size: 24px;
-      color: var(--accent-pink);
-      width: 100%;
+      padding: 14px 16px;
+      margin: 20px 0 28px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
     }
 
-    .submit-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--accent-pink), #ff0055);
-      border: none;
-      border-radius: 8px;
-      color: var(--text-main);
-      font-weight: 700;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(255, 45, 109, 0.4);
+    .refund-notice strong {
+      color: var(--text-primary);
+      font-weight: 600;
     }
 
-    /* PIX Checkout Details */
-    .pix-qr-wrapper {
-      background: white;
-      padding: 12px;
-      border-radius: 12px;
+    .phone-input-wrapper {
+      margin-bottom: 16px;
+      text-align: left;
     }
 
-    .pix-qr-code {
+    .phone-input-wrapper label {
       display: block;
-      width: 170px;
-      height: 170px;
-    }
-
-    .pix-code-textarea {
-      width: 100%;
-      height: 50px;
-      background: #202025;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: var(--text-muted);
-      padding: 8px;
-      font-size: 11px;
-      resize: none;
-      outline: none;
-      font-family: monospace;
-    }
-
-    .pix-timer {
       font-size: 13px;
-      color: var(--text-muted);
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
     }
 
-    .pix-status {
+    .phone-input-wrapper input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-primary);
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .phone-input-wrapper input:focus {
+      border-color: var(--green);
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--green), #00d68f);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px var(--green-glow);
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px var(--green-glow);
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* PIX Area */
+    .pix-area {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .pix-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .pix-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    .qr-wrapper {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .qr-wrapper img {
+      width: 200px;
+      height: 200px;
+    }
+
+    .pix-code-box {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .pix-code-box input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-family: monospace;
+      outline: none;
+    }
+
+    .copy-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .copy-btn:hover { background: rgba(255,255,255,0.14); }
+
+    .timer-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .timer-text span {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .checking-status {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      font-size: 13px;
-      color: var(--text-muted);
+      font-size: 12px;
+      color: var(--text-secondary);
     }
 
     .spinner {
       width: 14px;
       height: 14px;
-      border: 2px solid var(--border-color);
-      border-top-color: var(--accent-pink);
+      border: 2px solid var(--border);
+      border-top-color: var(--green);
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
 
-    /* Unlocked Content Area */
-    .unlocked-view {
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 8px;
       display: none;
-      flex-direction: column;
-      gap: 16px;
-      width: 100%;
-      animation: zoomIn 0.5s ease-out;
-    }
-
-    .unlocked-img-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      width: 100%;
-    }
-
-    .unlocked-img {
-      width: 100%;
-      aspect-ratio: 1/1;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes zoomIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
 <body>
 
-  <div class="glow-effect"></div>
+  <div class="container">
+    <div class="error-card">
 
-  <!-- Realtime Notification Popup -->
-  <div id="popup-notificacao">
-    <div class="popup-box">
-      <p id="popup-texto"><strong>Paulo</strong> entrou no grupo!<br>Agora somos <strong>329</strong> pessoas.</p>
-    </div>
-  </div>
+      <!-- Step 1: Error message + form -->
+      <div id="formArea">
+        <div class="error-icon">✕</div>
+        <h2 class="error-title">Falha no Pagamento</h2>
+        <p class="error-text">Não foi possível processar o seu pagamento.</p>
 
-  <!-- Chat Frame Box -->
-  <div class="chat-container">
-    
-    <!-- Header -->
-    <div class="chat-header">
-      <img src="images/talita.jpg" alt="Avatar" class="model-avatar">
-      <div class="header-info">
-        <h1 class="header-title">🔥 Grupo de Trocas VIP - Talita</h1>
-        <div class="header-status">
-          <span class="online-indicator"></span>
-          <span><strong id="membrosCount">327</strong> membros • 54 online</span>
+        <div class="refund-notice">
+          <strong>⚠️ Atenção:</strong> Caso o valor tenha saído da sua conta, ele será <strong>reembolsado integralmente</strong> em até 30 minutos.
         </div>
-      </div>
-    </div>
 
-    <!-- Messages Container -->
-    <div class="message-box" id="messageBox">
-      <!-- Chat start event -->
-      <div class="ct-event">Você entrou no grupo de trocas privado.</div>
-    </div>
+        <p class="error-text" style="margin-bottom: 20px;">Gere um novo código PIX para tentar novamente:</p>
 
-    <!-- Typing indicator -->
-    <div class="ct-typing" id="typingIndicator">Talita está digitando…</div>
+        <div class="phone-input-wrapper">
+          <label for="phone">Telefone</label>
+          <input type="tel" id="phone" placeholder="(11) 99999-9999" maxlength="15">
+        </div>
 
-  </div>
-
-  <!-- Upsell Checkout Modal -->
-  <div class="overlay-modal" id="upsellModal">
-    <div class="modal-content">
-      
-      <div class="modal-header">
-        <h2 class="modal-title" id="modalHeaderTitle">UPGRADE GOLD - ÁLBUM COMPLETO</h2>
-        <button class="close-btn" id="closeModalBtn">&times;</button>
+        <button class="generate-btn" id="generateBtn">Gerar Novo PIX</button>
+        <div class="error-msg" id="errorMsg"></div>
       </div>
 
-      <!-- Checkout Step 1: Offer -->
-      <div class="modal-body" id="upsellOfferBody">
-        <p class="lock-subtitle">Desbloqueie o álbum completo sem tarjas da Talita Marquez (+120 fotos e vídeos íntimos).</p>
-        <div class="upgrade-price">Apenas R$ 9,90</div>
-        <button class="submit-btn" id="generatePixBtn">Liberar com PIX</button>
-      </div>
+      <!-- Step 2: PIX QR Code -->
+      <div class="pix-area" id="pixArea">
+        <h3 class="pix-title">Aguardando Pagamento...</h3>
+        <p class="pix-subtitle">Escaneie o QR Code ou copie o código abaixo para pagar R$ 14,90.</p>
 
-      <!-- Checkout Step 2: PIX -->
-      <div class="modal-body" id="upsellPixBody" style="display: none;">
-        <h3 class="pix-title" style="color: var(--green-status);">Aguardando Pagamento...</h3>
-        <div class="pix-qr-wrapper">
-          <img class="pix-qr-code" id="pixQrImg" alt="QR Code PIX">
+        <div class="qr-wrapper">
+          <img id="pixQrImg" alt="QR Code PIX">
         </div>
-        <div class="pix-copia-cola-box" style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
-          <textarea class="pix-code-textarea" id="pixCopiaCola" readonly></textarea>
-          <button class="copy-btn" id="copyPixBtn" style="padding: 12px; background: #202025; border: 1px solid var(--border-color); color: white; font-weight: bold; border-radius: 8px; cursor: pointer;">Copiar Código PIX</button>
+
+        <div class="pix-code-box">
+          <input type="text" id="pixCode" readonly>
+          <button class="copy-btn" id="copyBtn">Copiar</button>
         </div>
-        <div class="pix-timer">Expira em: <strong id="pixTimer">59:59</strong></div>
-        <div class="pix-status">
+
+        <div class="timer-text">Expira em <span id="pixTimer">15:00</span></div>
+
+        <div class="checking-status">
           <div class="spinner"></div>
-          <span>Confirmando pagamento em tempo real...</span>
+          <span>Verificando pagamento automaticamente...</span>
         </div>
-      </div>
-
-      <!-- Checkout Step 3: Success / Album Unlocked -->
-      <div class="modal-body" id="upsellSuccessBody" style="display: none;">
-        <span class="success-icon" style="font-size: 54px; color: var(--green-status);">✓</span>
-        <h3 class="success-title" style="font-size: 20px; font-weight: bold;">Acesso Liberado!</h3>
-        <p class="success-subtitle" style="color: var(--text-muted); font-size: 13px;">Todo o álbum privado de Talita Marquez foi liberado.</p>
-        
-        <div class="unlocked-view" id="unlockedView" style="display: flex;">
-          <div class="unlocked-img-grid">
-            <img src="images/talita.jpg" class="unlocked-img" alt="Talita Unlocked 1">
-            <img src="images/preview_grid.jpg" class="unlocked-img" alt="Talita Unlocked 2">
-            <img src="images/talita.jpg" class="unlocked-img" alt="Talita Unlocked 3">
-            <img src="images/preview_grid.jpg" class="unlocked-img" alt="Talita Unlocked 4">
-          </div>
-        </div>
-        
-        <button class="submit-btn" id="closeSuccessBtn" style="background: var(--green-status); box-shadow: 0 4px 15px rgba(52, 210, 122, 0.4);">Ver Fotos na Galeria</button>
       </div>
 
     </div>
@@ -491,350 +313,164 @@
 
   <script src="js/qrcode.min.js"></script>
   <script>
-    // Live Notification Simulator
-    let membrosCount = 327;
-    const nomes = [
-      "João", "Carlos", "Maria", "Bruna", "Felipe", "Ana", "Paulo",
-      "Caio", "Roberta", "Luiz", "Julia", "Henrique", "Clara", "Marcos",
-      "Isabela", "Thiago", "Lorena", "Samuel", "Gustavo"
-    ];
-
-    function showNotification() {
-      const nome = nomes[Math.floor(Math.random() * nomes.length)];
-      membrosCount++;
-      
-      const popup = document.getElementById("popup-notificacao");
-      const texto = document.getElementById("popup-texto");
-      const membrosCountEl = document.getElementById("membrosCount");
-
-      texto.innerHTML = `<strong>${nome}</strong> entrou no grupo!<br>Agora somos <strong>${membrosCount}</strong> pessoas.`;
-      if (membrosCountEl) membrosCountEl.textContent = membrosCount;
-
-      popup.classList.add("popup-show");
-
-      setTimeout(() => {
-        popup.classList.remove("popup-show");
-      }, 4000);
-    }
-
-    function runNotificationLoop() {
-      showNotification();
-      setTimeout(runNotificationLoop, Math.random() * 8000 + 7000);
-    }
-    setTimeout(runNotificationLoop, 4000);
-
-    // Fake Live Chat logic
-    const chatBox = document.getElementById("messageBox");
-    const typingIndicator = document.getElementById("typingIndicator");
-
-    const mulheres = ["Talita Marquez 😈", "Larissa", "Gabi", "Mariana", "Fernanda"];
-    const outrosMembros = ["Marcos", "Lucas", "Rodrigo", "Felipe", "Matheus", "Thiago"];
-    const fotos = ["images/preview_grid.jpg"];
-
-    const frasesCurtas = [
-      "nossa 🔥", "caralho", "manda mais aí 😈", "tô gostando", "manda foto",
-      "olha essa pqp", "quem quer trocar?", "tô online nelas", "slk muito gata"
-    ];
-
-    const frasesLongas = [
-      "Alguém tem os vídeos novos da Talita? Manda aqui!",
-      "Nossa, a Talita é perfeita demais 😳",
-      "Estou enviando minhas fotos de hoje, quem quiser trocar no privado chama!",
-      "Mano, a última foto dela é sacanagem pura 🔥🔥🔥",
-      "O grupo de trocas está forte hoje hein 😈",
-      "Melhor VIP de todos, vale cada centavo"
-    ];
-
-    function getFormattedTime() {
-      const now = new Date();
-      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    }
-
-    function addChatEvent() {
-      const p = [...mulheres, ...outrosMembros][Math.floor(Math.random() * 11)];
-      const evs = ["ficou online", "abriu a galeria", "ativou as prévias 🔥", "entrou no grupo"];
-      const ev = evs[Math.floor(Math.random() * evs.length)];
-      
-      const div = document.createElement("div");
-      div.className = "ct-event";
-      div.textContent = `${getFormattedTime()} — ${p} ${ev}`;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function addChatMessage() {
-      const isMulher = Math.random() < 0.45;
-      const autor = isMulher ? mulheres[Math.floor(Math.random() * mulheres.length)] : outrosMembros[Math.floor(Math.random() * outrosMembros.length)];
-      
-      let text = "";
-      const rand = Math.random();
-      if (rand < 0.4) {
-        text = frasesCurtas[Math.floor(Math.random() * frasesCurtas.length)];
-      } else {
-        text = frasesLongas[Math.floor(Math.random() * frasesLongas.length)];
-      }
-
-      typingIndicator.textContent = `${autor} está digitando…`;
-      typingIndicator.style.opacity = "1";
-
-      setTimeout(() => {
-        typingIndicator.style.opacity = "0";
-
-        const div = document.createElement("div");
-        div.className = "ct-msg";
-        div.innerHTML = `
-          <div class="msg-header">
-            <span class="ct-nome">${autor}</span>
-            <span>${getFormattedTime()}</span>
-          </div>
-          <span class="ct-text">${text}</span>
-        `;
-
-        // Chance of sending a blurred preview image
-        const chanceFoto = isMulher ? 0.5 : 0.2;
-        if (Math.random() < chanceFoto) {
-          const img = document.createElement("img");
-          img.className = "ct-foto";
-          img.src = fotos[0];
-          img.alt = "Blurred image";
-          img.addEventListener('click', openUpsellCheckout);
-          div.appendChild(img);
-        }
-
-        chatBox.appendChild(div);
-        
-        requestAnimationFrame(() => {
-          div.style.opacity = "1";
-          div.style.transform = "translateY(0)";
-        });
-
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-      }, Math.random() * 500 + 200); // Digitação mais rápida (0.2s a 0.7s)
-    }
-
-    function runChatLoop() {
-      if (Math.random() < 0.15) {
-        addChatEvent();
-      }
-      addChatMessage();
-      setTimeout(runChatLoop, Math.random() * 1200 + 600); // Intervalo de mensagens muito mais rápido (0.6s a 1.8s)
-    }
-
-    // Initialize first few messages
-    setTimeout(() => {
-      addChatMessage();
-      setTimeout(runChatLoop, 1000);
-    }, 500);
-
-
-    // --- UPSELL CHECKOUT INTEGRATION ---
-    const upsellModal = document.getElementById('upsellModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    
-    const upsellOfferBody = document.getElementById('upsellOfferBody');
-    const upsellPixBody = document.getElementById('upsellPixBody');
-    const upsellSuccessBody = document.getElementById('upsellSuccessBody');
-    
-    const generatePixBtn = document.getElementById('generatePixBtn');
+    const phoneInput = document.getElementById('phone');
+    const generateBtn = document.getElementById('generateBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const formArea = document.getElementById('formArea');
+    const pixArea = document.getElementById('pixArea');
     const pixQrImg = document.getElementById('pixQrImg');
-    const pixCopiaCola = document.getElementById('pixCopiaCola');
-    const copyPixBtn = document.getElementById('copyPixBtn');
+    const pixCode = document.getElementById('pixCode');
+    const copyBtn = document.getElementById('copyBtn');
     const pixTimer = document.getElementById('pixTimer');
-    const closeSuccessBtn = document.getElementById('closeSuccessBtn');
 
     let pollInterval = null;
     let countdownInterval = null;
 
-    function openUpsellCheckout() {
-      upsellModal.style.display = 'flex';
-      setTimeout(() => upsellModal.style.opacity = '1', 10);
-      upsellModal.querySelector('.modal-content').style.transform = 'scale(1)';
-    }
+    // Máscara de telefone
+    phoneInput.addEventListener('input', () => {
+      let v = phoneInput.value.replace(/\D/g, "");
+      if (v.length > 11) v = v.slice(0, 11);
+      if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+      else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+      phoneInput.value = v;
+    });
 
-    function closeUpsellModal() {
-      upsellModal.style.opacity = '0';
-      upsellModal.querySelector('.modal-content').style.transform = 'scale(0.95)';
-      setTimeout(() => {
-        upsellModal.style.display = 'none';
-        upsellOfferBody.style.display = 'flex';
-        upsellPixBody.style.display = 'none';
-        upsellSuccessBody.style.display = 'none';
-        stopPixPolling();
-        stopCountdown();
-      }, 300);
-    }
+    // Preencher telefone do sessionStorage se disponível
+    try {
+      const cached = sessionStorage.getItem('customer_data');
+      if (cached) {
+        const data = JSON.parse(cached);
+        if (data.phone) {
+          let v = data.phone.replace(/\D/g, "");
+          if (v.length === 11) phoneInput.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+          else phoneInput.value = v;
+        }
+      }
+    } catch(e) {}
 
-    closeModalBtn.addEventListener('click', closeUpsellModal);
-
-    function renderQrCodeLocal(rawCode) {
+    function renderQrCode(rawCode) {
       try {
         const qr = qrcode(0, 'M');
         qr.addData(rawCode);
         qr.make();
         pixQrImg.src = qr.createDataURL(6, 8);
       } catch (err) {
-        console.error("Erro ao gerar QR Code localmente:", err);
+        console.error("Erro QR:", err);
       }
     }
 
-    // Generate Upsell Pix (Pre-fills billing info from index page details stored in sessionStorage)
-    generatePixBtn.addEventListener('click', async () => {
-      generatePixBtn.disabled = true;
-      generatePixBtn.textContent = "Processando...";
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+    }
 
-      // Retrieve cached billing details
-      let customer = {
-        name: "Maria Souza",
-        email: "cliente@email.com",
-        document: "12345678909",
-        phone: "11999999999"
-      };
-
-      try {
-        const cached = sessionStorage.getItem('customer_data');
-        if (cached) {
-          customer = JSON.parse(cached);
+    function startCountdown(expiresAt) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        const diff = new Date(expiresAt) - Date.now();
+        if (diff <= 0) {
+          pixTimer.textContent = "00:00";
+          clearInterval(countdownInterval);
+          // Expirou, mostrar formulário de novo
+          pixArea.style.display = 'none';
+          formArea.style.display = 'block';
+          generateBtn.disabled = false;
+          generateBtn.textContent = 'Gerar Novo PIX';
+          stopPolling();
+          return;
         }
-      } catch (e) {
-        console.warn("Nenhum dado de faturamento anterior encontrado.");
+        const m = Math.floor(diff / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        pixTimer.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      }, 1000);
+    }
+
+    function stopPolling() {
+      if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    }
+
+    function startPolling(id) {
+      stopPolling();
+      pollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/status-pix?id=${id}`);
+          if (!res.ok) return;
+          const data = await res.json();
+          if (data && data.paid) {
+            stopPolling();
+            if (countdownInterval) clearInterval(countdownInterval);
+            // Pagamento confirmado — mostrar falha de novo (loop)
+            pixArea.style.display = 'none';
+            formArea.style.display = 'block';
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Gerar Novo PIX';
+          }
+        } catch(e) {}
+      }, 4000);
+    }
+
+    // Gerar PIX
+    generateBtn.addEventListener('click', async () => {
+      const phone = phoneInput.value.replace(/\D/g, "");
+
+      if (phone.length < 10) {
+        showError("Digite seu telefone corretamente.");
+        return;
       }
+
+      generateBtn.disabled = true;
+      generateBtn.textContent = "Processando...";
+      errorMsg.style.display = 'none';
 
       try {
         const response = await fetch('/api/criar-pix', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: 990, // R$ 9,90 para o upgrade
-            customer: customer
+            amount: 1490,
+            customer: { phone }
           })
         });
 
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-          throw new Error(data.error || "Erro no gateway de pagamento.");
+          throw new Error(data.error || "Erro no gateway.");
         }
 
-        // Sempre gera o QR Code localmente para evitar erro 401 Unauthorized do qrCodeUrl da API
-        renderQrCodeLocal(data.qrCode);
-        pixCopiaCola.value = data.qrCode;
+        // Mostrar PIX
+        renderQrCode(data.qrCode);
+        pixCode.value = data.qrCode;
 
-        upsellOfferBody.style.display = 'none';
-        upsellPixBody.style.display = 'flex';
+        formArea.style.display = 'none';
+        pixArea.style.display = 'block';
 
-        // Start checking payment status
-        startPixPolling(data.id);
-        
         const expiresAt = data.expiresAt ? new Date(data.expiresAt) : new Date(Date.now() + 900 * 1000);
         startCountdown(expiresAt);
+        startPolling(data.id);
 
       } catch (err) {
-        alert(err.message || "Erro ao gerar PIX. Tente novamente.");
-        generatePixBtn.disabled = false;
-        generatePixBtn.textContent = "Liberar com PIX";
+        showError(err.message || "Erro ao gerar PIX. Tente novamente.");
+        generateBtn.disabled = false;
+        generateBtn.textContent = "Gerar Novo PIX";
       }
     });
 
-    // Pix status polling
-    function startPixPolling(id) {
-      stopPixPolling();
-      pollInterval = setInterval(async () => {
-        try {
-          const response = await fetch(`/api/status-pix?id=${id}`);
-          if (!response.ok) return;
-          
-          const data = await response.json();
-          if (data && data.paid) {
-            handleUpsellSuccess();
-          }
-        } catch (err) {
-          console.warn("Erro ao verificar status:", err);
-        }
-      }, 4000);
-    }
-
-    function stopPixPolling() {
-      if (pollInterval) {
-        clearInterval(pollInterval);
-        pollInterval = null;
-      }
-    }
-
-    function handleUpsellSuccess() {
-      stopPixPolling();
-      stopCountdown();
-      
-      upsellPixBody.style.display = 'none';
-      upsellSuccessBody.style.display = 'flex';
-      
-      // Unblur chat images as a reward!
-      document.querySelectorAll('.ct-foto').forEach(img => {
-        img.style.filter = "none";
-        img.style.cursor = "default";
-        img.removeEventListener('click', openUpsellCheckout);
-      });
-    }
-
-    // Copy Pix Code
-    copyPixBtn.addEventListener('click', () => {
-      pixCopiaCola.select();
-      pixCopiaCola.setSelectionRange(0, 99999);
-      
+    // Copiar código PIX
+    copyBtn.addEventListener('click', () => {
+      pixCode.select();
+      pixCode.setSelectionRange(0, 99999);
       try {
-        navigator.clipboard.writeText(pixCopiaCola.value);
-        copyPixBtn.textContent = "Código Copiado! ✓";
-        copyPixBtn.style.color = "var(--green-status)";
-        copyPixBtn.style.borderColor = "var(--green-status)";
-      } catch (err) {
+        navigator.clipboard.writeText(pixCode.value);
+        copyBtn.textContent = "Copiado!";
+        setTimeout(() => copyBtn.textContent = "Copiar", 2000);
+      } catch(e) {
         document.execCommand('copy');
-        copyPixBtn.textContent = "Código Copiado! ✓";
+        copyBtn.textContent = "Copiado!";
+        setTimeout(() => copyBtn.textContent = "Copiar", 2000);
       }
-
-      setTimeout(() => {
-        copyPixBtn.textContent = "Copiar Código PIX";
-        copyPixBtn.style.color = "var(--text-main)";
-        copyPixBtn.style.borderColor = "var(--border-color)";
-      }, 2000);
     });
-
-    function startCountdown(endTime) {
-      stopCountdown();
-      
-      function updateTimer() {
-        const now = new Date();
-        const diff = endTime - now;
-        
-        if (diff <= 0) {
-          stopCountdown();
-          pixTimer.textContent = "Expirado";
-          pixTimer.style.color = "var(--primary-color)";
-          stopPixPolling();
-          return;
-        }
-        
-        const minutes = Math.floor(diff / 60000);
-        const seconds = Math.floor((diff % 60000) / 1000);
-        
-        const pad = (num) => String(num).padStart(2, '0');
-        pixTimer.textContent = `${pad(minutes)}:${pad(seconds)}`;
-      }
-      
-      updateTimer();
-      countdownInterval = setInterval(updateTimer, 1000);
-    }
-
-    function stopCountdown() {
-      if (countdownInterval) {
-        clearInterval(countdownInterval);
-        countdownInterval = null;
-      }
-    }
-
-    // Success close btn
-    closeSuccessBtn.addEventListener('click', closeUpsellModal);
   </script>
+
 </body>
 </html>
